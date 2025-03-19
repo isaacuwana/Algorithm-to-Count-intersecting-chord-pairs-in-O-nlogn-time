@@ -27,3 +27,8 @@ The number of inversions in the reduced sequence equals the number of intersecti
 <p> O(n log n) time complexity where n is the number of chords
 <p> O(n) space complexity
 
+# Usage
+To use this algorithm in your project:
+<p> 1. Clone this repository </p>
+<p> 2. Import the: "count_chord_intersections" function </p>
+
