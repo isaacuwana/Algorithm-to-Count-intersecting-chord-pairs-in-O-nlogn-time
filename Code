@@ -1,0 +1,106 @@
+def count_chord_intersections(chords):
+    """
+    Count the number of intersecting chord pairs in O(n log n) time.
+    
+    Two chords (a,b) and (c,d) intersect if and only if one endpoint of each chord
+    is inside the arc defined by the other chord, and the other endpoint is outside.
+    
+    Args:
+        chords: List of (a,b) tuples representing chord endpoints
+                numbered from 0 to 2n-1 clockwise around the circle.
+    
+    Returns:
+        Number of intersecting chord pairs
+    """
+    # Created a mapping from chord endpoints to chord indices
+    endpoint_map = {}
+    for i, (a, b) in enumerate(chords):
+        endpoint_map[a] = i
+        endpoint_map[b] = i
+    
+    # Sorted all endpoints
+    endpoints = sorted(endpoint_map.keys())
+    
+    # This an array where each position contains the corresponding chord index
+    # Therefore, this creates a sequence where each chord index appears exactly twice
+    chord_sequence = [endpoint_map[p] for p in endpoints]
+    
+    # this is to find the position of the first occurrence of each chord
+    first_occurrence = {}
+    reduced_sequence = []
+    
+    for i, chord_idx in enumerate(chord_sequence):
+        if chord_idx not in first_occurrence:
+            first_occurrence[chord_idx] = i
+        else:
+            # For second occurrence, added the position of first occurrence to our sequence
+            reduced_sequence.append(first_occurrence[chord_idx])
+    
+    # Counted inversions in the reduced sequence
+    # This gives us the number of intersecting chord pairs
+    return count_inversions(reduced_sequence)
+
+def count_inversions(arr):
+    """
+    Count inversions in an array using merge sort.
+    An inversion is a pair (i,j) where i < j and arr[i] > arr[j].
+    
+    Args:
+        arr: List of integers
+    
+    Returns:
+        Number of inversions
+    """
+    def merge_and_count(left, right):
+        result = []
+        count = 0
+        i = j = 0
+        
+        while i < len(left) and j < len(right):
+            if left[i] <= right[j]:
+                result.append(left[i])
+                i += 1
+            else:
+                result.append(right[j])
+                # Counted inversions - each element in left[i:] forms an inversion with right[j]
+                count += len(left) - i
+                j += 1
+        
+        # Add remaining elements
+        result.extend(left[i:])
+        result.extend(right[j:])
+        
+        return result, count
+    
+    def sort_and_count(arr):
+        if len(arr) <= 1:
+            return arr, 0
+        
+        mid = len(arr) // 2
+        left, left_count = sort_and_count(arr[:mid])
+        right, right_count = sort_and_count(arr[mid:])
+        merged, split_count = merge_and_count(left, right)
+        
+        return merged, left_count + right_count + split_count
+    
+    _, inversions = sort_and_count(arr)
+    return inversions
+
+# Test cases
+def test_algorithm():
+    # Example 1: All chords intersect at the center (like diameters)
+    n = 4
+    diameters = [(i, i + n) for i in range(n)]  # (0,4), (1,5), (2,6), (3,7)
+    expected = n * (n - 1) // 2  # 4*3/2 = 6
+    result = count_chord_intersections(diameters)
+    print(f"{n} diameters: {result} intersections (expected {expected})")
+    
+    # Example 2: No intersections - chords along the perimeter
+    non_intersecting = [(0, 1), (2, 3), (4, 5), (6, 7)]
+    result = count_chord_intersections(non_intersecting)
+    print(f"Non-intersecting chords: {result} intersections (expected 0)")
+    
+    # Example 3: Triangle - all 3 chords intersect each other
+    triangle = [(0, 3), (1, 4), (2, 5)]
+    result = count_chord_intersections(triangle)
+    print(f"Triangle: {result} intersections (expected 3)")
