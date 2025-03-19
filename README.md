@@ -1,4 +1,4 @@
-# Algorithm-to-count-intersecting-chord-pairs-in-O-n-log-n-time
+# Algorithm to count intersecting chord pairs in O(nlogn) time
 Chord Intersection Algorithm
 Overview
 This repository contains a O(n log n) algorithm for counting the number of intersecting chord pairs on a circle. Given n chords on a circle, each defined by its endpoints, the algorithm determines how many pairs of chords intersect inside the circle.
